@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ref, onValue } from 'firebase/database';
-import { database } from './firebase'; // Pastikan file firebase.ts kamu export 'database'
+import { database } from './firebase';
 import snarkdown from 'snarkdown';
 
 interface AuditData {
@@ -9,14 +9,11 @@ interface AuditData {
   hasilAudit: string;
   timestamp: number;
   status: string;
-  nodeImage?: string;
-  fileKey?: string;
 }
 
 function App() {
   const [auditData, setAuditData] = useState<AuditData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'all' | 'ui' | 'dev'>('all');
 
   useEffect(() => {
     const auditRef = ref(database, 'current_audit');
@@ -45,29 +42,6 @@ function App() {
     return snarkdown(cleanLines);
   };
 
-  const getFilteredAudit = (fullText: string) => {
-    if (!fullText) return '';
-    if (activeTab === 'all') return fullText;
-
-    return fullText
-      .split('\n')
-      .filter(line => {
-        const lower = line.toLowerCase();
-        if (activeTab === 'ui') {
-          return !lower.includes('rekomendasi teknis');
-        }
-        if (activeTab === 'dev') {
-          return !lower.includes('rekomendasi solutif');
-        }
-        return true;
-      })
-      .join('\n');
-  };
-
-  const figmaDeepLink = auditData?.fileKey && auditData?.nodeId 
-    ? `https://www.figma.com/design/${auditData.fileKey}?node-id=${auditData.nodeId.replace(':', '-')}`
-    : null;
-
   return (
     <div style={{
       fontFamily: 'Inter, sans-serif',
@@ -89,7 +63,6 @@ function App() {
           </p>
         </header>
 
-        {/* Panduan Audit */}
         <div style={{
           backgroundColor: '#ffffff',
           border: '1px solid #e2e8f0',
@@ -105,6 +78,7 @@ function App() {
             </h3>
           </div>
 
+          {/* Penjelasan Pengantar: Rata Kanan-Kiri */}
           <p style={{ 
             margin: '0 0 14px 0', 
             fontSize: '13px', 
@@ -115,6 +89,7 @@ function App() {
             Asisten AI ini bertindak sebagai <strong>Co-Pilot UX</strong> yang menganalisis data struktural antarmuka dari Figma secara otomatis berdasarkan kerangka kerja <strong>10 Nielsen Usability Heuristics</strong>.
           </p>
 
+          {/* Grid Penjelasan Poin-Poin: Rata Kanan-Kiri */}
           <div style={{ 
             display: 'grid', 
             gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', 
@@ -124,6 +99,7 @@ function App() {
             lineHeight: '1.5',
             textAlign: 'justify'
           }}>
+            
             <div style={{ backgroundColor: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #f1f5f9' }}>
               <strong style={{ color: '#2563eb', display: 'block', marginBottom: '4px' }}>
                 1. Analisis Kognitif & Semantik
@@ -135,14 +111,14 @@ function App() {
               <strong style={{ color: '#2563eb', display: 'block', marginBottom: '4px' }}>
                 2. Fokus Antarmuka Fungsional
               </strong>
-              AI dirancang spesifik untuk menganalisis layar aplikasi/website nyata. Asset dekoratif atau gambar presentasi akan tetap dievaluasi berdasarkan standar baku UI.
+              AI dirancang spesifik untuk menganalisis layar aplikasi/website nyata. Asset dekoratif atau gambar presentasi (seperti <em>Dribbble Showcase/Cover</em>) akan tetap dievaluasi berdasarkan standar baku UI.
             </div>
 
             <div style={{ backgroundColor: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #f1f5f9' }}>
               <strong style={{ color: '#2563eb', display: 'block', marginBottom: '4px' }}>
                 3. Filter Objek Visual
               </strong>
-              Sistem secara otomatis menyaring elemen dekoratif berat dan hanya berfokus pada konten visual yang berada di dalam batas tampilan layar aktif.
+              Sistem secara otomatis menyaring elemen dekoratif berat dan hanya berfokus pada konten visual yang berada di dalam batas tampilan (viewport) layar aktif.
             </div>
 
             <div style={{ backgroundColor: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #f1f5f9' }}>
@@ -153,6 +129,7 @@ function App() {
             </div>
           </div>
 
+          {/* Catatan Kaki: Rata Kanan-Kiri */}
           <div style={{ 
             marginTop: '14px', 
             paddingTop: '10px', 
@@ -172,116 +149,50 @@ function App() {
         ) : auditData ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             
-            {/* Kartu Status & Pratinjau Komponen */}
+            {/* Kartu Status Informasi Komponen */}
             <div style={{
               background: '#fff',
               padding: '24px',
               borderRadius: '12px',
               boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.06)',
-              borderLeft: '6px solid #4f46e5',
-              display: 'flex',
-              gap: '24px',
-              flexWrap: 'wrap'
+              borderLeft: '6px solid #4f46e5'
             }}>
-              
-              <div style={{ flex: '1 1 300px' }}>
-                <h2 style={{ fontSize: '18px', margin: '0 0 16px 0', color: '#1e293b' }}>
-                  📋 Informasi Komponen Terakhir
-                </h2>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-                  <tbody>
-                    <tr>
-                      <td style={{ padding: '8px 0', color: '#64748b', width: '140px' }}>Nama Elemen</td>
-                      <td style={{ padding: '8px 0', fontWeight: 'bold', color: '#0f172a' }}>: {auditData.nodeName}</td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: '8px 0', color: '#64748b' }}>ID Node</td>
-                      <td style={{ padding: '8px 0', fontFamily: 'monospace', color: '#334155' }}>: {auditData.nodeId}</td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: '8px 0', color: '#64748b' }}>Waktu Audit</td>
-                      <td style={{ padding: '8px 0', color: '#334155' }}>
-                        : {new Date(auditData.timestamp).toLocaleString('id-ID')} WIB
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: '8px 0', color: '#64748b' }}>Status Analisis</td>
-                      <td style={{ padding: '8px 0' }}>
-                        : <span style={{
-                            backgroundColor: auditData.status === 'success' ? '#dcfce7' : '#fee2e2',
-                            color: auditData.status === 'success' ? '#15803d' : '#b91c1c',
-                            padding: '4px 10px',
-                            borderRadius: '20px',
-                            fontSize: '12px',
-                            fontWeight: 'bold'
-                          }}>
-                            {auditData.status.toUpperCase()}
-                          </span>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-
-                <div style={{ marginTop: '16px' }}>
-                  {figmaDeepLink ? (
-                    <a 
-                      href={figmaDeepLink} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      style={{ 
-                        display: 'inline-block', padding: '8px 16px', backgroundColor: '#0ea5e9', 
-                        color: '#ffffff', textDecoration: 'none', borderRadius: '6px', fontWeight: '600', fontSize: '13px' 
-                      }}
-                    >
-                      Buka di Figma
-                    </a>
-                  ) : (
-                    <span style={{ fontSize: '12px', color: '#94a3b8', fontStyle: 'italic' }}>
-                      * Jump to Node aktif jika berkas tersimpan di akun Figma Cloud.
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div style={{ flex: '0 0 200px', textAlign: 'center', alignSelf: 'center' }}>
-                <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#94a3b8', display: 'block', marginBottom: '8px' }}>
-                  PRATINJAU VISUAL
-                </span>
-                {auditData.nodeImage ? (
-                  <img 
-                    src={auditData.nodeImage} 
-                    alt="Preview" 
-                    style={{ maxWidth: '100%', maxHeight: '140px', borderRadius: '6px', border: '1px solid #cbd5e1', objectFit: 'contain' }}
-                  />
-                ) : (
-                  <div style={{ padding: '20px', background: '#f1f5f9', borderRadius: '6px', color: '#94a3b8', fontSize: '12px' }}>
-                    Pratinjau tidak tersedia
-                  </div>
-                )}
-              </div>
-
-            </div>
-
-            {/* Menu Navigasi Tab */}
-            <div style={{ display: 'flex', gap: '10px', borderBottom: '2px solid #e2e8f0', paddingBottom: '12px' }}>
-              <button 
-                onClick={() => setActiveTab('all')}
-                style={{ padding: '8px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '13px', backgroundColor: activeTab === 'all' ? '#1e293b' : '#f1f5f9', color: activeTab === 'all' ? '#ffffff' : '#64748b' }}
-              >
-                Semua Laporan
-              </button>
-              <button 
-                onClick={() => setActiveTab('ui')}
-                style={{ padding: '8px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '13px', backgroundColor: activeTab === 'ui' ? '#0284c7' : '#f1f5f9', color: activeTab === 'ui' ? '#ffffff' : '#64748b' }}
-              >
-                🎨 Rekomendasi Desainer
-              </button>
-              <button 
-                onClick={() => setActiveTab('dev')}
-                style={{ padding: '8px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '13px', backgroundColor: activeTab === 'dev' ? '#16a34a' : '#f1f5f9', color: activeTab === 'dev' ? '#ffffff' : '#64748b' }}
-              >
-                💻 Rekomendasi Developer
-              </button>
+              <h2 style={{ fontSize: '18px', margin: '0 0 16px 0', color: '#1e293b' }}>
+                📋 Informasi Komponen Terakhir
+              </h2>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+                <tbody>
+                  <tr>
+                    <td style={{ padding: '8px 0', color: '#64748b', width: '180px' }}>Nama Elemen Figma</td>
+                    <td style={{ padding: '8px 0', fontWeight: 'bold', color: '#0f172a' }}>: {auditData.nodeName}</td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '8px 0', color: '#64748b' }}>ID Node Figma</td>
+                    <td style={{ padding: '8px 0', fontFamily: 'monospace', color: '#334155' }}>: {auditData.nodeId}</td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '8px 0', color: '#64748b' }}>Waktu Sinkronisasi</td>
+                    <td style={{ padding: '8px 0', color: '#334155' }}>
+                      : {new Date(auditData.timestamp).toLocaleString('id-ID')} WIB
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '8px 0', color: '#64748b' }}>Status Analisis</td>
+                    <td style={{ padding: '8px 0' }}>
+                      : <span style={{
+                          backgroundColor: auditData.status === 'success' ? '#dcfce7' : '#fee2e2',
+                          color: auditData.status === 'success' ? '#15803d' : '#b91c1c',
+                          padding: '4px 10px',
+                          borderRadius: '20px',
+                          fontSize: '12px',
+                          fontWeight: 'bold'
+                        }}>
+                          {auditData.status.toUpperCase()}
+                        </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
 
             {/* Kartu Hasil Rekomendasi AI */}
@@ -295,6 +206,7 @@ function App() {
                 Hasil Analisis & Rekomendasi Pakar AI
               </h2>
               
+              {/* Hasil Audit Markdown AI: Rata Kanan-Kiri */}
               <div 
                 style={{
                   background: '#f8fafc',
@@ -305,15 +217,17 @@ function App() {
                   lineHeight: '1.7',
                   color: '#334155',
                   fontFamily: 'inherit',
-                  textAlign: 'justify',
+                  textAlign: 'justify', // 👈 Dibuat rata kanan-kiri
+                  
                   maxWidth: '100%',
                   boxSizing: 'border-box',
                   overflowX: 'hidden',
+                  
                   whiteSpace: 'normal', 
                   wordBreak: 'break-word',
                   overflowWrap: 'break-word'
                 }}
-                dangerouslySetInnerHTML={{ __html: renderCleanMarkdown(getFilteredAudit(auditData.hasilAudit || '')) }}
+                dangerouslySetInnerHTML={{ __html: renderCleanMarkdown(auditData.hasilAudit || '') }}
               />
             </div>
 
@@ -332,6 +246,7 @@ function App() {
         )}
       </div>
       
+      {/* CSS Internal untuk Komponen Markdown (Serta pemaksa Justify pada elemen p & li turunan) */}
       <style>{`
         div[dangerouslySetInnerHTML] p, div[dangerouslySetInnerHTML] li {
           text-align: justify !important;
