@@ -2,13 +2,9 @@ import { useEffect, useState, useMemo } from 'react';
 import { ref, onValue } from 'firebase/database';
 import { database } from './firebase'; 
 import './App.css';
-
-// Import Utils & Types
 import { DICTIONARY } from './utils/dictionary';
 import { parseAuditData, getHeuristicStatus } from './utils/helpers';
 import type { AuditData } from './utils/helpers';
-
-// Import Components
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import KpiBoard from './components/KpiBoard';
@@ -18,13 +14,10 @@ import AnalysisDetail from './components/AnalysisDetail';
 function App() {
   const [auditData, setAuditData] = useState<AuditData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  // Default langsung membuka 'ALL' (Semua Frame)
   const [selectedFrame, setSelectedFrame] = useState<string>('ALL');
   const [language, setLanguage] = useState<'id' | 'en'>('id');
-
   const t = DICTIONARY[language];
 
-  // Fetch data dari Firebase
   useEffect(() => {
     const auditRef = ref(database, 'current_audit');
     const unsubscribe = onValue(auditRef, (snapshot) => {
@@ -39,26 +32,23 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  // Parse Frames
   const parsedFrames = useMemo(() => {
     return parseAuditData(auditData?.hasilAudit || '', auditData?.nodeName || 'Unknown');
   }, [auditData]);
 
-  // Logika gabung semua frame jika 'ALL' dipilih
   const activeFrameData = useMemo(() => {
     if (!parsedFrames || parsedFrames.length === 0) return undefined;
 
     if (selectedFrame === 'ALL') {
       return {
         name: t.allFrames || 'Semua Frame',
-        content: parsedFrames.map(f => `### 🖼️ Frame: ${f.name}\n${f.content}`).join('\n\n---\n\n')
+        content: parsedFrames.map(f => `### Frame: ${f.name}\n${f.content}`).join('\n\n---\n\n')
       };
     }
 
     return parsedFrames.find(f => f.name === selectedFrame) || parsedFrames[0];
   }, [parsedFrames, selectedFrame, t]);
 
-  // Kalkulasi KPI Dashboard
   const kpiStats = useMemo(() => {
     let major = 0;
     let minor = 0;
