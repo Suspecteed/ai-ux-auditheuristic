@@ -33,7 +33,6 @@ export const parseAuditData = (rawText: string, fallbackName: string): ParsedFra
 export const getHeuristicStatus = (content: string, hIndex: number) => {
   if (!content) return 'Processing';
 
-  // 1. Cek detail blok temuan terlebih dahulu untuk mendapatkan tingkat keparahan yang akurat
   const findingBlocks = content.split(/(?:Temuan|Finding)\s*#?\d+/i);
   for (let i = 1; i < findingBlocks.length; i++) {
     const block = findingBlocks[i];
@@ -47,7 +46,6 @@ export const getHeuristicStatus = (content: string, hIndex: number) => {
     }
   }
 
-  // 2. Cek baris per baris secara spesifik pada matriks ringkasan atas
   const lines = content.split('\n');
   for (const line of lines) {
     const exactLineRegex = new RegExp(`^[•\\-\\*]?\\s*H${hIndex}\\b`, 'i');
