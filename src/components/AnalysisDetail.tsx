@@ -9,7 +9,7 @@ interface AnalysisDetailProps {
 }
 
 export default function AnalysisDetail({ t, activeFrameData }: AnalysisDetailProps) {
-  // State activeTab dipindahkan ke sini karena hanya dipakai di komponen ini
+
   const [activeTab, setActiveTab] = useState<'all' | 'designer' | 'developer'>('all');
 
   return (
