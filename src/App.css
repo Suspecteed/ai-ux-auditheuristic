@@ -466,3 +466,36 @@
   font-weight: 500; 
   width: 100%; 
 }
+
+/* --- STYLING KHUSUS CETAK / EXPORT PDF --- */
+@media print {
+  /* Hilangkan scrollbar dan paksa tinggi menyesuaikan dokumen */
+  :root, body, html, #root, .ux-app-wrapper {
+    height: auto !important;
+    overflow: visible !important;
+    background-color: #FFFFFF !important;
+  }
+
+  /* Sembunyikan elemen UI yang tidak perlu ada di dokumen PDF */
+  .ux-select-lang, 
+  .ux-btn-export, 
+  .ux-analysis-tabs {
+    display: none !important;
+  }
+
+  /* Rapikan tata letak halaman utama */
+  .ux-main {
+    padding: 0 !important;
+    height: auto !important;
+  }
+
+  .ux-main-card {
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .ux-markdown-container {
+    height: auto !important;
+    overflow: visible !important;
+  }
+}

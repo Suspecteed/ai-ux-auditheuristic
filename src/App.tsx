@@ -18,12 +18,13 @@ import AnalysisDetail from './components/AnalysisDetail';
 function App() {
   const [auditData, setAuditData] = useState<AuditData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedFrame, setSelectedFrame] = useState<string>('');
+  // Default langsung membuka 'ALL' (Semua Frame)
+  const [selectedFrame, setSelectedFrame] = useState<string>('ALL');
   const [language, setLanguage] = useState<'id' | 'en'>('id');
 
   const t = DICTIONARY[language];
 
-  // Fetch dari Firebase
+  // Fetch data dari Firebase
   useEffect(() => {
     const auditRef = ref(database, 'current_audit');
     const unsubscribe = onValue(auditRef, (snapshot) => {
@@ -43,17 +44,21 @@ function App() {
     return parseAuditData(auditData?.hasilAudit || '', auditData?.nodeName || 'Unknown');
   }, [auditData]);
 
-  useEffect(() => {
-    if (parsedFrames.length > 0 && !selectedFrame) {
-      setSelectedFrame(parsedFrames[0].name);
-    }
-  }, [parsedFrames, selectedFrame]);
-
+  // Logika gabung semua frame jika 'ALL' dipilih
   const activeFrameData = useMemo(() => {
-    return parsedFrames.find(f => f.name === selectedFrame) || parsedFrames[0];
-  }, [parsedFrames, selectedFrame]);
+    if (!parsedFrames || parsedFrames.length === 0) return undefined;
 
-  // Kalkulasi KPI
+    if (selectedFrame === 'ALL') {
+      return {
+        name: t.allFrames || 'Semua Frame',
+        content: parsedFrames.map(f => `### 🖼️ Frame: ${f.name}\n${f.content}`).join('\n\n---\n\n')
+      };
+    }
+
+    return parsedFrames.find(f => f.name === selectedFrame) || parsedFrames[0];
+  }, [parsedFrames, selectedFrame, t]);
+
+  // Kalkulasi KPI Dashboard
   const kpiStats = useMemo(() => {
     let major = 0;
     let minor = 0;
@@ -85,7 +90,6 @@ function App() {
 
   return (
     <div className="ux-app-wrapper">
-      
       <Sidebar t={t} />
 
       <main className="ux-main">
@@ -93,7 +97,6 @@ function App() {
           <div className="ux-empty">{t.emptyState}</div>
         ) : (
           <div className="ux-main-card">
-            
             <Header 
               t={t} 
               language={language} 
@@ -109,6 +112,7 @@ function App() {
 
               <div className="ux-split-layout">
                 <FrameList 
+                  t={t}
                   parsedFrames={parsedFrames} 
                   selectedFrame={selectedFrame} 
                   setSelectedFrame={setSelectedFrame} 

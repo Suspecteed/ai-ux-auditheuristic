@@ -18,7 +18,7 @@ export const parseAuditData = (rawText: string, fallbackName: string): ParsedFra
   if (!rawText.includes('Frame:')) {
     return [{ name: fallbackName, content: rawText }];
   }
-  const segments = rawText.split(/#{1,3}\s*(?:🖼️)?\s*Frame:\s*/i);
+  const segments = rawText.split(/#{1,3}\s*(?:)?\s*Frame:\s*/i);
   const result: ParsedFrame[] = [];
   for (const seg of segments) {
     if (!seg.trim()) continue;
