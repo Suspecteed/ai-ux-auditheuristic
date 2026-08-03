@@ -21,28 +21,47 @@ export default function Sidebar({ t }: SidebarProps) {
       <h3 className="ux-matrix-title" style={{ marginTop: '2px' }}>
         {t.nielsenMatrixTitle}
       </h3>
+      
       <div 
         className="ux-nielsen" 
         style={{ 
           borderRadius: '10px', 
-          padding: '5px 10px', 
+          padding: '5px 0px', 
           marginBottom: '20px', 
         }}
       >
-        <ul 
-          style={{ 
-            margin: 0, 
-            paddingLeft: '6px', 
-            fontSize: '11px', 
-            lineHeight: '1.6' 
-          }}
-        >
-          {t.nielsenList && t.nielsenList.map((item, idx) => (
-            <li key={idx} style={{ marginBottom: '2px' }}>
-              {item}
-            </li>
-          ))}
-        </ul>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          {t.nielsenList && t.nielsenList.map((item, idx) => {
+            const parts = item.split(':');
+            const code = parts[0]?.trim(); 
+            const label = parts.slice(1).join(':').trim(); 
+
+            return (
+              <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                <span 
+                  style={{ 
+                    color: '#000000', 
+                    border: '1px solid #444444', 
+                    borderRadius: '4px', 
+                    padding: '1px 4px', 
+                    fontSize: '9px', 
+                    fontWeight: 'bold', 
+                    flexShrink: 0, 
+                    minWidth: '25px', 
+                    textAlign: 'center',
+                    lineHeight: '1.4'
+                  }}
+                >
+                  {code}
+                </span>
+
+                <span style={{ fontSize: '11px', lineHeight: '1.3' }}>
+                  {label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       <h3 className="ux-matrix-title">{t.legendTitle}</h3>
