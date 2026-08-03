@@ -257,13 +257,6 @@
   line-height: 1; 
 }
 
-.ux-red { 
-  color: #DC2826; 
-}
-
-.ux-amber { 
-  color: #D97706; 
-}
 
 /* --- INDICATOR DOTS --- */
 .ux-dot { 
@@ -377,7 +370,6 @@
 .ux-b-may  { background: #FEF9C3; border-color: #FDE047; color: #A16207; }
 .ux-b-min  { background: #F7FEE7; border-color: #D9F99D; color: #4D7C0F; }
 .ux-b-pass { background: #F0FDF4; border-color: #BBF7D0; color: #15803D; }
-.ux-b-warn { background: #FFFBEB; border-color: #FDE68A; color: #B45309; }
 .ux-b-proc { background: #F8FAFC; border-color: #E2E8F0; color: #64748B; }
 
 .ux-divider-line { 
