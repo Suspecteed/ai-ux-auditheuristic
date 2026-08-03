@@ -59,12 +59,22 @@ const kpiStats = useMemo(() => {
   parsedFrames.forEach(frame => {
     for (let i = 1; i <= 10; i++) {
       const status = getHeuristicStatus(frame.content, i);
-      if (status === 'Kritikal') critical++;
-      else if (status === 'Mayor') major++;
-      else if (status === 'Minor') minor++;
-      else if (status === 'Passed') passed++;
-
+      if (status === 'Passed') passed++;
       if (status !== 'Processing') evaluatedCount++;
+    }
+
+    const findingBlocks = frame.content.split(/(?:Temuan|Finding)\s*#?\d+/i);
+    
+    for (let i = 1; i < findingBlocks.length; i++) {
+      const block = findingBlocks[i].toLowerCase();
+      
+      if (block.includes('kritikal') || block.includes('critical')) {
+        critical++;
+      } else if (block.includes('mayor') || block.includes('major')) {
+        major++;
+      } else if (block.includes('minor') || block.includes('warning')) {
+        minor++;
+      }
     }
   });
 
