@@ -8,13 +8,44 @@ export default function Sidebar({ t }: SidebarProps) {
   return (
     <aside className="ux-sidebar">
       <div className="ux-logo-area">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/Figma-logo.svg" alt="Figma Logo" style={{ width: '22px', height: '33px', flexShrink: 0 }} />
+        <img 
+          src="https://upload.wikimedia.org/wikipedia/commons/3/33/Figma-logo.svg" 
+          alt="Figma Logo" 
+          style={{ width: '22px', height: '33px', flexShrink: 0 }} 
+        />
         <span>Figma UI</span>
       </div>
       <h1 className="ux-sidebar-title">{t.mainTitle}</h1>
       <p className="ux-sidebar-desc">{t.subTitle}</p>
 
-      <h3 className="ux-palette-title">{t.legendTitle}</h3>
+      <h3 className="ux-matrix-title" style={{ marginTop: '2px' }}>
+        {t.nielsenMatrixTitle}
+      </h3>
+      <div 
+        className="ux-nielsen" 
+        style={{ 
+          borderRadius: '10px', 
+          padding: '5px 10px', 
+          marginBottom: '20px', 
+        }}
+      >
+        <ul 
+          style={{ 
+            margin: 0, 
+            paddingLeft: '6px', 
+            fontSize: '11px', 
+            lineHeight: '1.6' 
+          }}
+        >
+          {t.nielsenList && t.nielsenList.map((item, idx) => (
+            <li key={idx} style={{ marginBottom: '2px' }}>
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <h3 className="ux-matrix-title">{t.legendTitle}</h3>
       <div className="ux-palette-list">
         <div className="ux-color-item">
           <span className="ux-swatch" style={{ backgroundColor: '#DC2826' }}></span>
