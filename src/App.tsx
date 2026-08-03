@@ -49,28 +49,30 @@ function App() {
     return parsedFrames.find(f => f.name === selectedFrame) || parsedFrames[0];
   }, [parsedFrames, selectedFrame, t]);
 
-  const kpiStats = useMemo(() => {
-    let major = 0;
-    let minor = 0;
-    let passed = 0;
-    let evaluatedCount = 0;
+const kpiStats = useMemo(() => {
+  let critical = 0;
+  let major = 0;
+  let minor = 0;
+  let passed = 0;
+  let evaluatedCount = 0;
 
-    parsedFrames.forEach(frame => {
-      for (let i = 1; i <= 10; i++) {
-        const status = getHeuristicStatus(frame.content, i);
-        if (status === 'Kritikal' || status === 'Mayor') major++;
-        else if (status === 'Minor') minor++;
-        else if (status === 'Passed') passed++;
+  parsedFrames.forEach(frame => {
+    for (let i = 1; i <= 10; i++) {
+      const status = getHeuristicStatus(frame.content, i);
+      if (status === 'Kritikal') critical++;
+      else if (status === 'Mayor') major++;
+      else if (status === 'Minor') minor++;
+      else if (status === 'Passed') passed++;
 
-        if (status !== 'Processing') evaluatedCount++;
-      }
-    });
+      if (status !== 'Processing') evaluatedCount++;
+    }
+  });
 
-    const total = parsedFrames.length || 0;
-    const passRate = evaluatedCount > 0 ? Math.round((passed / evaluatedCount) * 100) : 0;
+  const total = parsedFrames.length || 0;
+  const passRate = evaluatedCount > 0 ? Math.round((passed / evaluatedCount) * 100) : 0;
 
-    return { total, major, minor, passRate };
-  }, [parsedFrames]);
+  return { total, passRate, critical, major, minor };
+}, [parsedFrames]);
 
   const syncDate = auditData?.timestamp ? new Date(auditData.timestamp).toLocaleString(language === 'id' ? 'id-ID' : 'en-US') : '-';
 
