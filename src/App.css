@@ -28,15 +28,69 @@
 
 /* --- SIDEBAR (KIRI) --- */
 .ux-sidebar { 
-  width: 220px !important; 
+  position: fixed !important; /* Mengambang di atas konten */
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 260px !important; /* Sedikit dilebarkan agar lebih lega */
   padding: 16px 14px !important; 
   background-color: #F8FAFC !important; 
-  flex-shrink: 0 !important; 
   display: flex !important; 
   flex-direction: column !important; 
   height: 100vh !important; 
   overflow-y: auto !important; 
-  z-index: 2 !important; 
+  z-index: 50 !important; 
+  transition: transform 0.3s ease-in-out !important;
+  box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+}
+
+.ux-sidebar-open {
+  transform: translateX(0);
+}
+
+.ux-sidebar-closed {
+  transform: translateX(-100%); /* Sembunyi ke kiri layar */
+}
+
+/* --- OVERLAY GELAP & TOMBOL ICON --- */
+.ux-drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+  transition: opacity 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.ux-icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.ux-icon-btn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.ux-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  color: #64748B;
+}
+
+.ux-close-btn:hover {
+  background-color: #E2E8F0;
+  color: #0F172A;
 }
 
 .ux-logo-area { 
@@ -120,13 +174,12 @@
 /* --- AREA KONTEN UTAMA (KANAN) --- */
 .ux-main { 
   flex: 1; 
-  padding: 12px 12px 12px 0; 
+  padding: 12px; /* Ubah dari 12px 12px 12px 0 */
   display: flex; 
   flex-direction: column; 
   height: 100vh; 
   min-width: 0; 
 }
-
 .ux-main-card { 
   background-color: #FFFFFF; 
   border-radius: 10px; 

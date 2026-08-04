@@ -2,11 +2,16 @@ import type { DictionaryContext } from '../utils/dictionary';
 
 interface SidebarProps {
   t: DictionaryContext;
+  isOpen: boolean;        
+  closeDrawer: () => void; 
 }
 
-export default function Sidebar({ t }: SidebarProps) {
+export default function Sidebar({ t, isOpen, closeDrawer }: SidebarProps) {
   return (
-    <aside className="ux-sidebar">
+    <aside className={`ux-sidebar ${isOpen ? 'ux-sidebar-open' : 'ux-sidebar-closed'}`}>
+      <button className="ux-icon-btn ux-close-btn" onClick={closeDrawer}>
+        <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
       <div className="ux-logo-area">
         <img 
           src="https://upload.wikimedia.org/wikipedia/commons/3/33/Figma-logo.svg" 

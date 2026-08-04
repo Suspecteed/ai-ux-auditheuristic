@@ -5,9 +5,10 @@ interface HeaderProps {
   language: 'id' | 'en';
   setLanguage: (lang: 'id' | 'en') => void;
   syncDate: string;
+  toggleDrawer: () => void; 
 }
 
-export default function Header({ t, language, setLanguage, syncDate }: HeaderProps) {
+export default function Header({ t, language, setLanguage, syncDate, toggleDrawer }: HeaderProps) {
 
   const handleExport = () => {
     window.print();
@@ -16,6 +17,9 @@ export default function Header({ t, language, setLanguage, syncDate }: HeaderPro
   return (
     <header className="ux-dark-header">
       <div className="ux-header-left">
+        <button className="ux-icon-btn" onClick={toggleDrawer} style={{ marginRight: '8px', color: '#F8FAFC' }}>
+          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
         <span className="ux-badge-copilot">
           <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
           {t.appTitle}

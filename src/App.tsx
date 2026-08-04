@@ -17,6 +17,9 @@ function App() {
   const [selectedFrame, setSelectedFrame] = useState<string>('ALL');
   const [language, setLanguage] = useState<'id' | 'en'>('id');
   const t = DICTIONARY[language];
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
+  const closeDrawer = () => setIsDrawerOpen(false);
 
   useEffect(() => {
     const auditRef = ref(database, 'current_audit');
@@ -90,21 +93,29 @@ const kpiStats = useMemo(() => {
     return <div className="ux-loading">{t.loading}</div>;
   }
 
-  return (
-    <div className="ux-app-wrapper">
-      <Sidebar t={t} />
+ return (
+  <div className="ux-app-wrapper">
+    {/* Tambahkan Overlay Gelap yang bisa diklik untuk menutup */}
+    {isDrawerOpen && (
+      <div className="ux-drawer-overlay" onClick={closeDrawer}></div>
+    )}
 
-      <main className="ux-main">
-        {parsedFrames.length === 0 ? (
-          <div className="ux-empty">{t.emptyState}</div>
-        ) : (
-          <div className="ux-main-card">
-            <Header 
-              t={t} 
-              language={language} 
-              setLanguage={setLanguage} 
-              syncDate={syncDate} 
-            />
+    {/* Kirim props ke Sidebar */}
+    <Sidebar t={t} isOpen={isDrawerOpen} closeDrawer={closeDrawer} />
+
+    <main className="ux-main">
+      {parsedFrames.length === 0 ? (
+        <div className="ux-empty">{t.emptyState}</div>
+      ) : (
+        <div className="ux-main-card">
+          {/* Kirim props toggle ke Header */}
+          <Header 
+            t={t} 
+            language={language} 
+            setLanguage={setLanguage} 
+            syncDate={syncDate}
+            toggleDrawer={toggleDrawer} 
+          />
 
             <div className="ux-card-body">
               <KpiBoard 
