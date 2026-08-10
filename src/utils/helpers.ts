@@ -18,15 +18,33 @@ export const parseAuditData = (rawText: string, fallbackName: string): ParsedFra
   if (!rawText.includes('Frame:')) {
     return [{ name: fallbackName, content: rawText }];
   }
+
   const segments = rawText.split(/#{1,3}\s*(?:)?\s*Frame:\s*/i);
-  const result: ParsedFrame[] = [];
+  const frameMap = new Map<string, string[]>();
+
   for (const seg of segments) {
     if (!seg.trim()) continue;
     const lines = seg.trim().split('\n');
-    const name = lines[0].replace(/[*_#\[\]]/g, '').trim();
+    const rawHeader = lines[0].replace(/[*_#\[\]]/g, '').trim();
+    
+    const mainFrameName = rawHeader.split('➔')[0].trim() || rawHeader;
     const content = lines.slice(1).join('\n').replace(/^---/gm, '').trim();
-    if (name) result.push({ name, content });
+
+    if (!frameMap.has(mainFrameName)) {
+      frameMap.set(mainFrameName, []);
+    }
+    
+    frameMap.get(mainFrameName)?.push(`### ${rawHeader}\n${content}`);
   }
+
+  const result: ParsedFrame[] = [];
+  frameMap.forEach((contents, name) => {
+    result.push({
+      name,
+      content: contents.join('\n\n---\n\n')
+    });
+  });
+
   return result;
 };
 
