@@ -1,4 +1,5 @@
 import type { DictionaryContext } from '../utils/dictionary';
+import { SEVERITY_CONFIG } from '../utils/severity';
 
 interface KpiBoardProps {
   t: DictionaryContext;
@@ -15,62 +16,42 @@ export default function KpiBoard({ t, kpiStats }: KpiBoardProps) {
  return (
     <>
       <h2 className="ux-section-title">{t.kpiSummary}</h2>
-      <div 
-        className="ux-kpi-grid" 
-        style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(5, 1fr)', 
-          gap: '12px' 
-        }}
-      >
-        {/* Total Frames */}
+      <div className="ux-kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '12px' }}>
+        
         <div className="ux-kpi-box">
           <span className="ux-kpi-label">{t.kpiTotalFrames}:</span>
-          <div className="ux-kpi-bottom">
-            <span className="ux-kpi-number">{kpiStats.total}</span>
-          </div>
+          <div className="ux-kpi-bottom"><span className="ux-kpi-number">{kpiStats.total}</span></div>
         </div>
 
-        {/* Pass Rate */}
         <div className="ux-kpi-box">
           <span className="ux-kpi-label">{t.kpiPassRate}:</span>
-          <div className="ux-kpi-bottom">
-            <span className="ux-kpi-number">{kpiStats.passRate}%</span>
-          </div>
+          <div className="ux-kpi-bottom"><span className="ux-kpi-number">{kpiStats.passRate}%</span></div>
         </div>
 
-        {/* Critical Issues */}
         <div className="ux-kpi-box">
           <span className="ux-kpi-label">{t.kpiCritical}:</span>
           <div className="ux-kpi-bottom">
-            <span className="ux-kpi-number" style={{ color: '#DC2826' }}>
-              {kpiStats.critical}
-            </span> 
-            <span className="ux-dot" style={{ backgroundColor: '#DC2826' }}></span>
+            <span className="ux-kpi-number" style={{ color: SEVERITY_CONFIG.CRITICAL.color }}>{kpiStats.critical}</span> 
+            <span className="ux-dot" style={{ backgroundColor: SEVERITY_CONFIG.CRITICAL.color }}></span>
           </div>
         </div>
 
-        {/* Major Issues */}
         <div className="ux-kpi-box">
           <span className="ux-kpi-label">{t.kpiMajor}:</span>
           <div className="ux-kpi-bottom">
-            <span className="ux-kpi-number" style={{ color: '#EAB308' }}>
-              {kpiStats.major}
-            </span> 
-            <span className="ux-dot" style={{ backgroundColor: '#EAB308' }}></span>
+            <span className="ux-kpi-number" style={{ color: SEVERITY_CONFIG.MAJOR.color }}>{kpiStats.major}</span> 
+            <span className="ux-dot" style={{ backgroundColor: SEVERITY_CONFIG.MAJOR.color }}></span>
           </div>
         </div>
 
-        {/* Minor Issues */}
         <div className="ux-kpi-box">
           <span className="ux-kpi-label">{t.kpiMinor}:</span>
           <div className="ux-kpi-bottom">
-            <span className="ux-kpi-number" style={{ color: '#84CC16' }}>
-              {kpiStats.minor}
-            </span> 
-            <span className="ux-dot" style={{ backgroundColor: '#84CC16' }}></span>
+            <span className="ux-kpi-number" style={{ color: SEVERITY_CONFIG.MINOR.color }}>{kpiStats.minor}</span> 
+            <span className="ux-dot" style={{ backgroundColor: SEVERITY_CONFIG.MINOR.color }}></span>
           </div>
         </div>
+
       </div>
     </>
   );

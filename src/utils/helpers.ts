@@ -11,7 +11,6 @@ export interface Issue {
 }
 
 export interface AuditData {
-  nodeId: string;
   nodeName: string;
   hasilAudit: string;
   timestamp: number;

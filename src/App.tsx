@@ -3,8 +3,7 @@ import { ref, onValue } from 'firebase/database';
 import { database } from './firebase'; 
 import './App.css';
 import { DICTIONARY } from './utils/dictionary';
-import { parseAuditData } from './utils/helpers'; 
-import type { AuditData } from './utils/helpers';
+import { parseAuditData, type AuditData } from './utils/helpers'; 
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import KpiBoard from './components/KpiBoard';
@@ -16,6 +15,7 @@ function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedFrame, setSelectedFrame] = useState<string>('ALL');
   const [language, setLanguage] = useState<'id' | 'en'>('id');
+  
   const t = DICTIONARY[language];
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
@@ -31,7 +31,6 @@ function App() {
       console.error("Firebase read error:", error);
       setLoading(false);
     });
-
     return () => unsubscribe();
   }, []);
 
@@ -41,21 +40,17 @@ function App() {
 
   const activeFrameData = useMemo(() => {
     if (!parsedFrames || parsedFrames.length === 0) return undefined;
-
     if (selectedFrame === 'ALL') {
       return {
-        name: t.allFrames || 'Semua Frame',
+        name: t.allFrames,
         content: parsedFrames.map(f => `### Frame: ${f.name}\n${f.content}`).join('\n\n---\n\n')
       };
     }
-
     return parsedFrames.find(f => f.name === selectedFrame) || parsedFrames[0];
   }, [parsedFrames, selectedFrame, t]);
 
-const kpiStats = useMemo(() => {
-    let critical = 0;
-    let major = 0;
-    let minor = 0;
+  const kpiStats = useMemo(() => {
+    let critical = 0, major = 0, minor = 0;
 
     if (auditData?.issuesData && Array.isArray(auditData.issuesData)) {
       auditData.issuesData.forEach(issue => {
@@ -76,60 +71,29 @@ const kpiStats = useMemo(() => {
        const passedHeuristics = totalEvaluatedHeuristics - violatedHeuristics.size;
        passRate = Math.round((passedHeuristics / totalEvaluatedHeuristics) * 100);
     }
-
     return { total: totalFrames, passRate, critical, major, minor };
   }, [parsedFrames.length, auditData?.issuesData]);
 
-
   const syncDate = auditData?.timestamp ? new Date(auditData.timestamp).toLocaleString(language === 'id' ? 'id-ID' : 'en-US') : '-';
 
-  if (loading) {
-    return <div className="ux-loading">{t.loading}</div>;
-  }
+  if (loading) return <div className="ux-loading">{t.loading}</div>;
 
   return (
     <div className="ux-app-wrapper">
-      {isDrawerOpen && (
-        <div className="ux-drawer-overlay" onClick={closeDrawer}></div>
-      )}
-
+      {isDrawerOpen && <div className="ux-drawer-overlay" onClick={closeDrawer}></div>}
       <Sidebar t={t} isOpen={isDrawerOpen} closeDrawer={closeDrawer} />
-
       <main className="ux-main">
         {parsedFrames.length === 0 ? (
           <div className="ux-empty">{t.emptyState}</div>
         ) : (
           <div className="ux-main-card">
-            <Header 
-              t={t} 
-              language={language} 
-              setLanguage={setLanguage} 
-              syncDate={syncDate}
-              toggleDrawer={toggleDrawer} 
-            />
-
+            <Header t={t} language={language} setLanguage={setLanguage} syncDate={syncDate} toggleDrawer={toggleDrawer} />
             <div className="ux-card-body">
-              <KpiBoard 
-                t={t} 
-                kpiStats={kpiStats} 
-              />
-
+              <KpiBoard t={t} kpiStats={kpiStats} />
               <div className="ux-split-layout">
-                <FrameList 
-                  t={t}
-                  parsedFrames={parsedFrames} 
-                  selectedFrame={selectedFrame} 
-                  setSelectedFrame={setSelectedFrame} 
-                />
-                
-               <AnalysisDetail 
-                  t={t} 
-                  activeFrameData={activeFrameData} 
-                  issuesData={auditData?.issuesData || []} 
-                  selectedFrame={selectedFrame}            
-                />
+                <FrameList t={t} parsedFrames={parsedFrames} selectedFrame={selectedFrame} setSelectedFrame={setSelectedFrame} />
+                <AnalysisDetail t={t} activeFrameData={activeFrameData} issuesData={auditData?.issuesData || []} selectedFrame={selectedFrame} />
               </div>
-
             </div>
           </div>
         )}
