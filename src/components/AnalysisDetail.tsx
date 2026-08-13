@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import type { DictionaryContext } from '../utils/dictionary';
-import type { ParsedFrame } from '../utils/helpers';
-import { getHeuristicStatus, getFilteredContent, renderCleanMarkdown } from '../utils/helpers';
+import type { ParsedFrame, Issue } from '../utils/helpers'; // Tambahkan import Issue
+import { getFilteredContent, renderCleanMarkdown } from '../utils/helpers';
 
 interface AnalysisDetailProps {
   t: DictionaryContext;
   activeFrameData: ParsedFrame | undefined;
+  issuesData: Issue[];
+  selectedFrame: string;
 }
 
-export default function AnalysisDetail({ t, activeFrameData }: AnalysisDetailProps) {
+export default function AnalysisDetail({ t, activeFrameData, issuesData, selectedFrame }: AnalysisDetailProps) {
 
   const [activeTab, setActiveTab] = useState<'all' | 'designer' | 'developer'>('all');
 
@@ -19,15 +21,32 @@ export default function AnalysisDetail({ t, activeFrameData }: AnalysisDetailPro
         <div className="ux-matrix-container">
           {activeFrameData && Array.from({ length: 10 }).map((_, i) => {
             const hNum = i + 1;
-            const status = getHeuristicStatus(activeFrameData.content, hNum);
+            const heuristicId = `H${hNum}`;
             
-            let badgeClass = 'ux-b-proc';
-            let dotClass = 'ux-bg-gray';
+            // ✨ LOGIKA BARU: Cari status keparahan murni dari JSON AI
+            let status = 'Passed';
+            let badgeClass = 'ux-b-pass';
+            let dotClass = 'ux-bg-green';
 
-            if (status === 'Kritikal') { badgeClass = 'ux-b-crit'; dotClass = 'ux-bg-red'; } 
-            else if (status === 'Mayor') { badgeClass = 'ux-b-may'; dotClass = 'ux-bg-yellow'; } 
-            else if (status === 'Minor') { badgeClass = 'ux-b-min'; dotClass = 'ux-bg-lime'; } 
-            else if (status === 'Passed') { badgeClass = 'ux-b-pass'; dotClass = 'ux-bg-green'; }
+            if (issuesData && issuesData.length > 0) {
+              // Filter isu berdasarkan frame yang sedang aktif
+              const frameIssues = selectedFrame === 'ALL' 
+                ? issuesData 
+                : issuesData.filter(issue => issue.frameName === activeFrameData.name);
+              
+              // Cari apakah ada pelanggaran untuk Heuristik (H1-H10) ini
+              const foundIssue = frameIssues.find(issue => issue.heuristicId === heuristicId);
+              
+              if (foundIssue) {
+                if (foundIssue.badgeColor.includes('🔴')) {
+                  status = 'Kritikal'; badgeClass = 'ux-b-crit'; dotClass = 'ux-bg-red';
+                } else if (foundIssue.badgeColor.includes('🟡')) {
+                  status = 'Mayor'; badgeClass = 'ux-b-may'; dotClass = 'ux-bg-yellow';
+                } else if (foundIssue.badgeColor.includes('🟢')) {
+                  status = 'Minor'; badgeClass = 'ux-b-min'; dotClass = 'ux-bg-lime';
+                }
+              }
+            }
 
             return (
               <span key={hNum} className={`ux-badge ${badgeClass}`}>

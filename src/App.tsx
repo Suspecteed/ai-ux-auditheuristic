@@ -3,7 +3,7 @@ import { ref, onValue } from 'firebase/database';
 import { database } from './firebase'; 
 import './App.css';
 import { DICTIONARY } from './utils/dictionary';
-import { parseAuditData, getHeuristicStatus } from './utils/helpers';
+import { parseAuditData } from './utils/helpers'; // getHeuristicStatus sudah bisa dihapus
 import type { AuditData } from './utils/helpers';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -52,40 +52,39 @@ function App() {
     return parsedFrames.find(f => f.name === selectedFrame) || parsedFrames[0];
   }, [parsedFrames, selectedFrame, t]);
 
-const kpiStats = useMemo(() => {
-  let critical = 0;
-  let major = 0;
-  let minor = 0;
-  let passed = 0;
-  let evaluatedCount = 0;
+  // 👇 INI BAGIAN YANG DIPERBARUI (Menggunakan JSON issuesData) 👇
+  const kpiStats = useMemo(() => {
+    let critical = 0;
+    let major = 0;
+    let minor = 0;
 
-  parsedFrames.forEach(frame => {
-    for (let i = 1; i <= 10; i++) {
-      const status = getHeuristicStatus(frame.content, i);
-      if (status === 'Passed') passed++;
-      if (status !== 'Processing') evaluatedCount++;
+    // 1. Hitung jumlah masalah langsung dari JSON AI (Akurat 100%)
+    if (auditData?.issuesData && Array.isArray(auditData.issuesData)) {
+      auditData.issuesData.forEach(issue => {
+        if (issue.badgeColor.includes('🔴')) critical++;
+        else if (issue.badgeColor.includes('🟡')) major++;
+        else if (issue.badgeColor.includes('🟢')) minor++;
+      });
     }
 
-    const findingBlocks = frame.content.split(/(?:Temuan|Finding)\s*#?\d+/i);
+    const totalFrames = parsedFrames.length || 0;
     
-    for (let i = 1; i < findingBlocks.length; i++) {
-      const block = findingBlocks[i].toLowerCase();
-      
-      if (block.includes('kritikal') || block.includes('critical')) {
-        critical++;
-      } else if (block.includes('mayor') || block.includes('major')) {
-        major++;
-      } else if (block.includes('minor') || block.includes('warning')) {
-        minor++;
-      }
+    // 2. Hitung Pass Rate secara Matematis & Presisi
+    let passRate = 0;
+    if (totalFrames > 0) {
+       const totalEvaluatedHeuristics = totalFrames * 10;
+       
+       const violatedHeuristics = new Set(
+         (auditData?.issuesData || []).map(issue => `${issue.frameName}-${issue.heuristicId}`)
+       );
+       
+       const passedHeuristics = totalEvaluatedHeuristics - violatedHeuristics.size;
+       passRate = Math.round((passedHeuristics / totalEvaluatedHeuristics) * 100);
     }
-  });
 
-  const total = parsedFrames.length || 0;
-  const passRate = evaluatedCount > 0 ? Math.round((passed / evaluatedCount) * 100) : 0;
-
-  return { total, passRate, critical, major, minor };
-}, [parsedFrames]);
+    return { total: totalFrames, passRate, critical, major, minor };
+  }, [parsedFrames.length, auditData?.issuesData]);
+  // 👆 AKHIR BAGIAN YANG DIPERBARUI 👆
 
   const syncDate = auditData?.timestamp ? new Date(auditData.timestamp).toLocaleString(language === 'id' ? 'id-ID' : 'en-US') : '-';
 
@@ -93,29 +92,29 @@ const kpiStats = useMemo(() => {
     return <div className="ux-loading">{t.loading}</div>;
   }
 
- return (
-  <div className="ux-app-wrapper">
-    {/* Tambahkan Overlay Gelap yang bisa diklik untuk menutup */}
-    {isDrawerOpen && (
-      <div className="ux-drawer-overlay" onClick={closeDrawer}></div>
-    )}
+  return (
+    <div className="ux-app-wrapper">
+      {/* Tambahkan Overlay Gelap yang bisa diklik untuk menutup */}
+      {isDrawerOpen && (
+        <div className="ux-drawer-overlay" onClick={closeDrawer}></div>
+      )}
 
-    {/* Kirim props ke Sidebar */}
-    <Sidebar t={t} isOpen={isDrawerOpen} closeDrawer={closeDrawer} />
+      {/* Kirim props ke Sidebar */}
+      <Sidebar t={t} isOpen={isDrawerOpen} closeDrawer={closeDrawer} />
 
-    <main className="ux-main">
-      {parsedFrames.length === 0 ? (
-        <div className="ux-empty">{t.emptyState}</div>
-      ) : (
-        <div className="ux-main-card">
-          {/* Kirim props toggle ke Header */}
-          <Header 
-            t={t} 
-            language={language} 
-            setLanguage={setLanguage} 
-            syncDate={syncDate}
-            toggleDrawer={toggleDrawer} 
-          />
+      <main className="ux-main">
+        {parsedFrames.length === 0 ? (
+          <div className="ux-empty">{t.emptyState}</div>
+        ) : (
+          <div className="ux-main-card">
+            {/* Kirim props toggle ke Header */}
+            <Header 
+              t={t} 
+              language={language} 
+              setLanguage={setLanguage} 
+              syncDate={syncDate}
+              toggleDrawer={toggleDrawer} 
+            />
 
             <div className="ux-card-body">
               <KpiBoard 
@@ -131,9 +130,11 @@ const kpiStats = useMemo(() => {
                   setSelectedFrame={setSelectedFrame} 
                 />
                 
-                <AnalysisDetail 
+               <AnalysisDetail 
                   t={t} 
                   activeFrameData={activeFrameData} 
+                  issuesData={auditData?.issuesData || []} 
+                  selectedFrame={selectedFrame}            
                 />
               </div>
 

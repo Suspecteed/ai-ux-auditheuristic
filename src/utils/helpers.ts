@@ -1,11 +1,22 @@
 import snarkdown from 'snarkdown';
 
+export interface Issue {
+  heuristicId: string;
+  heuristicTitle: string;
+  severityLevel: string;
+  nodeName: string;
+  frameName: string;
+  problem: string;
+  solution: string;
+}
+
 export interface AuditData {
   nodeId: string;
   nodeName: string;
   hasilAudit: string;
   timestamp: number;
   status: string;
+  issuesData?: Issue[]; 
 }
 
 export interface ParsedFrame {
@@ -46,42 +57,6 @@ export const parseAuditData = (rawText: string, fallbackName: string): ParsedFra
   });
 
   return result;
-};
-
-export const getHeuristicStatus = (content: string, hIndex: number) => {
-  if (!content) return 'Processing';
-
-  const findingBlocks = content.split(/(?:Temuan|Finding)\s*#?\d+/i);
-  for (let i = 1; i < findingBlocks.length; i++) {
-    const block = findingBlocks[i];
-    const hPrincipleRegex = new RegExp(`(?:Prinsip\\s*Nielsen|Nielsen\\s*Principle)\\s*[:\\-]?\\s*\\bH${hIndex}\\b`, 'i');
-    if (hPrincipleRegex.test(block)) {
-      const lower = block.toLowerCase();
-      if (lower.includes('kritikal') || lower.includes('critical')) return 'Kritikal';
-      if (lower.includes('mayor') || lower.includes('major')) return 'Mayor';
-      if (lower.includes('minor')) return 'Minor';
-      if (lower.includes('warning')) return 'Minor';
-    }
-  }
-
-  const lines = content.split('\n');
-  for (const line of lines) {
-    const exactLineRegex = new RegExp(`^[•\\-\\*]?\\s*H${hIndex}\\b`, 'i');
-    if (exactLineRegex.test(line)) {
-      const lower = line.toLowerCase();
-      if (lower.includes('passed') || lower.includes('pass') || lower.includes('lolos')) {
-        if (!lower.includes('warning') && !lower.includes('kritikal') && !lower.includes('mayor') && !lower.includes('minor')) {
-          return 'Passed';
-        }
-      }
-      if (lower.includes('kritikal') || lower.includes('critical')) return 'Kritikal';
-      if (lower.includes('mayor') || lower.includes('major')) return 'Mayor';
-      if (lower.includes('minor')) return 'Minor';
-      if (lower.includes('warning')) return 'Minor';
-    }
-  }
-
-  return 'Passed';
 };
 
 export const getFilteredContent = (content: string, tab: 'all' | 'designer' | 'developer') => {
