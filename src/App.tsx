@@ -3,7 +3,7 @@ import { ref, onValue } from 'firebase/database';
 import { database } from './firebase'; 
 import './App.css';
 import { DICTIONARY } from './utils/dictionary';
-import { parseAuditData } from './utils/helpers'; // getHeuristicStatus sudah bisa dihapus
+import { parseAuditData } from './utils/helpers'; 
 import type { AuditData } from './utils/helpers';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -52,39 +52,34 @@ function App() {
     return parsedFrames.find(f => f.name === selectedFrame) || parsedFrames[0];
   }, [parsedFrames, selectedFrame, t]);
 
-  // 👇 INI BAGIAN YANG DIPERBARUI (Menggunakan JSON issuesData) 👇
-  const kpiStats = useMemo(() => {
+const kpiStats = useMemo(() => {
     let critical = 0;
     let major = 0;
     let minor = 0;
 
-    // 1. Hitung jumlah masalah langsung dari JSON AI (Akurat 100%)
     if (auditData?.issuesData && Array.isArray(auditData.issuesData)) {
       auditData.issuesData.forEach(issue => {
-        if (issue.badgeColor.includes('🔴')) critical++;
-        else if (issue.badgeColor.includes('🟡')) major++;
-        else if (issue.badgeColor.includes('🟢')) minor++;
+        const lvl = (issue.severityLevel || '').toUpperCase();
+        if (lvl === 'CRITICAL') critical++;
+        else if (lvl === 'MAJOR') major++;
+        else if (lvl === 'MINOR') minor++;
       });
     }
 
     const totalFrames = parsedFrames.length || 0;
-    
-    // 2. Hitung Pass Rate secara Matematis & Presisi
     let passRate = 0;
     if (totalFrames > 0) {
        const totalEvaluatedHeuristics = totalFrames * 10;
-       
        const violatedHeuristics = new Set(
          (auditData?.issuesData || []).map(issue => `${issue.frameName}-${issue.heuristicId}`)
        );
-       
        const passedHeuristics = totalEvaluatedHeuristics - violatedHeuristics.size;
        passRate = Math.round((passedHeuristics / totalEvaluatedHeuristics) * 100);
     }
 
     return { total: totalFrames, passRate, critical, major, minor };
   }, [parsedFrames.length, auditData?.issuesData]);
-  // 👆 AKHIR BAGIAN YANG DIPERBARUI 👆
+
 
   const syncDate = auditData?.timestamp ? new Date(auditData.timestamp).toLocaleString(language === 'id' ? 'id-ID' : 'en-US') : '-';
 
@@ -94,12 +89,10 @@ function App() {
 
   return (
     <div className="ux-app-wrapper">
-      {/* Tambahkan Overlay Gelap yang bisa diklik untuk menutup */}
       {isDrawerOpen && (
         <div className="ux-drawer-overlay" onClick={closeDrawer}></div>
       )}
 
-      {/* Kirim props ke Sidebar */}
       <Sidebar t={t} isOpen={isDrawerOpen} closeDrawer={closeDrawer} />
 
       <main className="ux-main">
@@ -107,7 +100,6 @@ function App() {
           <div className="ux-empty">{t.emptyState}</div>
         ) : (
           <div className="ux-main-card">
-            {/* Kirim props toggle ke Header */}
             <Header 
               t={t} 
               language={language} 

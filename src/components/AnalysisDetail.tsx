@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { DictionaryContext } from '../utils/dictionary';
-import type { ParsedFrame, Issue } from '../utils/helpers'; // Tambahkan import Issue
+import type { ParsedFrame, Issue } from '../utils/helpers';
 import { getFilteredContent, renderCleanMarkdown } from '../utils/helpers';
 
 interface AnalysisDetailProps {
@@ -23,26 +23,24 @@ export default function AnalysisDetail({ t, activeFrameData, issuesData, selecte
             const hNum = i + 1;
             const heuristicId = `H${hNum}`;
             
-            // ✨ LOGIKA BARU: Cari status keparahan murni dari JSON AI
             let status = 'Passed';
             let badgeClass = 'ux-b-pass';
             let dotClass = 'ux-bg-green';
 
             if (issuesData && issuesData.length > 0) {
-              // Filter isu berdasarkan frame yang sedang aktif
               const frameIssues = selectedFrame === 'ALL' 
                 ? issuesData 
                 : issuesData.filter(issue => issue.frameName === activeFrameData.name);
               
-              // Cari apakah ada pelanggaran untuk Heuristik (H1-H10) ini
               const foundIssue = frameIssues.find(issue => issue.heuristicId === heuristicId);
               
-              if (foundIssue) {
-                if (foundIssue.badgeColor.includes('🔴')) {
+             if (foundIssue) {
+                const lvl = (foundIssue.severityLevel || '').toUpperCase();
+                if (lvl === 'CRITICAL') {
                   status = 'Kritikal'; badgeClass = 'ux-b-crit'; dotClass = 'ux-bg-red';
-                } else if (foundIssue.badgeColor.includes('🟡')) {
+                } else if (lvl === 'MAJOR') {
                   status = 'Mayor'; badgeClass = 'ux-b-may'; dotClass = 'ux-bg-yellow';
-                } else if (foundIssue.badgeColor.includes('🟢')) {
+                } else if (lvl === 'MINOR') {
                   status = 'Minor'; badgeClass = 'ux-b-min'; dotClass = 'ux-bg-lime';
                 }
               }

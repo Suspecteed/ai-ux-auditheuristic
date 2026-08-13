@@ -39,7 +39,7 @@ export default function KpiBoard({ t, kpiStats }: KpiBoardProps) {
           </div>
         </div>
 
-        {/* Critical Issues - Merah (#DC2826) */}
+        {/* Critical Issues */}
         <div className="ux-kpi-box">
           <span className="ux-kpi-label">{t.kpiCritical}:</span>
           <div className="ux-kpi-bottom">
@@ -50,7 +50,7 @@ export default function KpiBoard({ t, kpiStats }: KpiBoardProps) {
           </div>
         </div>
 
-        {/* Major Issues - Kuning/Oranye (#EAB308) */}
+        {/* Major Issues */}
         <div className="ux-kpi-box">
           <span className="ux-kpi-label">{t.kpiMajor}:</span>
           <div className="ux-kpi-bottom">
@@ -61,7 +61,7 @@ export default function KpiBoard({ t, kpiStats }: KpiBoardProps) {
           </div>
         </div>
 
-        {/* Minor Issues - Hijau Muda/Lime (#84CC16) */}
+        {/* Minor Issues */}
         <div className="ux-kpi-box">
           <span className="ux-kpi-label">{t.kpiMinor}:</span>
           <div className="ux-kpi-bottom">
