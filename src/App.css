@@ -517,30 +517,30 @@
 }
 
 .ux-markdown-container code {
-  background-color: #F1F5F9; 
-  color: #0F172A;            
-  padding: 3px 6px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  border: 1px solid #CBD5E1;
+  background-color: #F1F5F9 !important; 
+  color: #0F172A !important;            
+  padding: 3px 6px !important;
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace !important;
+  border: 1px solid #CBD5E1 !important;
 }
 
 .ux-markdown-container a {
-  color: #2563EB; 
-  text-decoration: none;
-  background-color: #EFF6FF; 
-  padding: 3px 8px;
-  border-radius: 12px; 
-  font-size: 11px;
-  font-weight: 600;
-  border: 1px solid #BFDBFE;
-  transition: all 0.2s ease;
+  color: #2563EB !important; 
+  text-decoration: none !important;
+  background-color: #EFF6FF !important; 
+  padding: 3px 8px !important;
+  border-radius: 12px !important; 
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  border: 1px solid #BFDBFE !important;
+  pointer-events: auto !important; 
 }
 
 .ux-markdown-container a:hover {
-  background-color: #DBEAFE;
-  border-color: #93C5FD;
+  background-color: #DBEAFE !important;
+  border-color: #93C5FD !important;
 }
 
 .ux-loading, .ux-empty { 
