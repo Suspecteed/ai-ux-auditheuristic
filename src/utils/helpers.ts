@@ -79,5 +79,9 @@ export const getFilteredContent = (content: string, tab: 'all' | 'designer' | 'd
 export const renderCleanMarkdown = (rawText: string) => {
   if (!rawText) return '';
   const cleanLines = rawText.split('\n').map(line => line.trim()).join('\n');
-  return snarkdown(cleanLines);
+  const html = snarkdown(cleanLines);
+  return html.replace(
+    /<code>(.*?)<\/code>/g,
+    '<span style="background-color: #F1F5F9; color: #0F172A; padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: 600; border: 1px solid #CBD5E1; font-family: ui-monospace, monospace;">$1</span>'
+  );
 };
