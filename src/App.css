@@ -466,37 +466,47 @@
   height: 0; 
   overflow-y: auto; 
   font-size: 13px; 
-  line-height: 1.5; 
+  line-height: 1.6; 
   color: #334155; 
   padding-bottom: 20px; 
   padding-right: 8px; 
 }
 
-.ux-markdown-container h1, 
-.ux-markdown-container h2, 
-.ux-markdown-container h3 { 
+.ux-markdown-container h2 { 
+  font-size: 16px; 
   color: #0F172A; 
   font-weight: 700; 
-  margin: 0.8em 0 0.3em 0; 
+  border-bottom: 2px solid #E2E8F0;
+  padding-bottom: 8px;
+  margin-top: 24px;
+  margin-bottom: 12px;
   text-align: left; 
-  font-size: 13px; 
+}
+
+.ux-markdown-container h3 { 
+  font-size: 14px; 
+  color: #1E293B; 
+  font-weight: 700; 
+  margin-top: 20px;
+  margin-bottom: 10px;
+  text-align: left; 
 }
 
 .ux-markdown-container p { 
-  margin-bottom: 0.6em; 
+  margin-bottom: 12px; 
   text-align: left; 
 }
 
 .ux-markdown-container ul, 
 .ux-markdown-container ol { 
-  margin: 0 0 0.6em 1.2em; 
+  margin: 0 0 16px 1.2em; 
   padding: 0; 
   list-style-position: outside; 
   text-align: left; 
 }
 
 .ux-markdown-container li { 
-  margin-bottom: 0.3em; 
+  margin-bottom: 6px; 
   display: list-item; 
   text-align: left; 
 }
@@ -504,6 +514,33 @@
 .ux-markdown-container strong { 
   color: #0F172A; 
   font-weight: 600; 
+}
+
+.ux-markdown-container code {
+  background-color: #F1F5F9; 
+  color: #0F172A;            
+  padding: 3px 6px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  border: 1px solid #CBD5E1;
+}
+
+.ux-markdown-container a {
+  color: #2563EB; 
+  text-decoration: none;
+  background-color: #EFF6FF; 
+  padding: 3px 8px;
+  border-radius: 12px; 
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid #BFDBFE;
+  transition: all 0.2s ease;
+}
+
+.ux-markdown-container a:hover {
+  background-color: #DBEAFE;
+  border-color: #93C5FD;
 }
 
 .ux-loading, .ux-empty { 
