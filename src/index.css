@@ -111,8 +111,24 @@ code {
 }
 
 pre, code {
-  white-space: pre-wrap !important;       /* Memaksa teks berpindah baris otomatis */
-  word-break: break-word !important;     /* Memotong kata panjang agar tidak jebol */
-  overflow-x: auto !important;           /* Mencegah kotak meluap ke samping */
-  max-width: 100% !important;            /* Mengunci lebar maksimal mengikuti kontainer */
+  white-space: pre-wrap !important;      
+  word-break: break-word !important;    
+  overflow-x: auto !important;           
+  max-width: 100% !important;            
+}
+
+html body .ux-app-wrapper code,
+html body .ux-markdown-container code,
+html body code {
+  background-color: #F1F5F9 !important;
+  color: #0F172A !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  border: 1px solid #CBD5E1 !important;
+  display: inline-block !important;
+  line-height: 1.2 !important;
+  box-shadow: none !important;
 }
