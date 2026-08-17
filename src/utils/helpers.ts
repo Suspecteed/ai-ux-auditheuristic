@@ -82,6 +82,6 @@ export const renderCleanMarkdown = (rawText: string) => {
   const html = snarkdown(cleanLines);
   return html.replace(
     /<code>(.*?)<\/code>/g,
-    '<span style="background-color: #F1F5F9; color: #0F172A; padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: 600; border: 1px solid #CBD5E1; font-family: ui-monospace, monospace;">$1</span>'
+    '<span style="background-color: #cfe3f7; color: #0F172A; padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: bold; border: 1px solid #0072fd; font-family: ui-monospace, monospace;">$1</span>'
   );
 };
