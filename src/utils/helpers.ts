@@ -85,3 +85,16 @@ export const renderCleanMarkdown = (rawText: string) => {
     '<span style="background-color: #cfe3f7; color: #0F172A; padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: bold; border: 1px solid #0072fd; font-family: ui-monospace, monospace;">$1</span>'
   );
 };
+
+export const normalizeStr = (str: string) =>
+  (str || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+export const getSeverityWeight = (level: string) => {
+  const lvl = (level || '').toUpperCase();
+  if (lvl === 'CRITICAL') return 1;
+  if (lvl === 'MAJOR') return 2;
+  return 3;
+};
+
+export const sortFindingsBySeverity = (issues: Issue[]) =>
+  [...issues].sort((a, b) => getSeverityWeight(a.severityLevel) - getSeverityWeight(b.severityLevel));

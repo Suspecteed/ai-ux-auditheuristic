@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { DictionaryContext } from '../utils/dictionary';
 import type { ParsedFrame, Issue } from '../utils/helpers';
-import { getFilteredContent, renderCleanMarkdown } from '../utils/helpers';
+import { getFilteredContent, renderCleanMarkdown, normalizeStr, sortFindingsBySeverity } from '../utils/helpers';
 import { SEVERITY_CONFIG, type SeverityLevel } from '../utils/severity';
 
 interface AnalysisDetailProps {
@@ -25,7 +25,11 @@ export default function AnalysisDetail({ t, activeFrameData, issuesData, selecte
             let currentLevel: SeverityLevel = 'PASSED';
 
             if (issuesData && issuesData.length > 0) {
-              const frameIssues = selectedFrame === 'ALL' ? issuesData : issuesData.filter(issue => issue.frameName === activeFrameData.name);
+              const frameIssues = selectedFrame === 'ALL'
+                ? sortFindingsBySeverity(issuesData)
+                : sortFindingsBySeverity(
+                    issuesData.filter(issue => normalizeStr(issue.frameName) === normalizeStr(activeFrameData.name))
+                  );
               const foundIssue = frameIssues.find(issue => issue.heuristicId === heuristicId);
               if (foundIssue) {
                 const lvl = (foundIssue.severityLevel || '').toUpperCase() as SeverityLevel;
